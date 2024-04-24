@@ -1,15 +1,21 @@
 from htmlnode import HTMLNode, LeafNode, ParentNode
 import unittest
 
+
 class TestHTMLNode(unittest.TestCase):
 
     def test_html_props(self):
-        node1 = HTMLNode("p", "goodbye", None, {"class": "hello", "href":"https://www.google.com"}) 
-        self.assertEqual(node1.props_to_html(),' class="hello" href="https://www.google.com"')
+        node1 = HTMLNode(
+            "p", "goodbye", None, {"class": "hello", "href": "https://www.google.com"}
+        )
+        self.assertEqual(
+            node1.props_to_html(), ' class="hello" href="https://www.google.com"'
+        )
 
     def test_empty_props(self):
         node1 = HTMLNode("p", "goodbye", None, {})
         self.assertEqual(node1.props_to_html(), "")
+
 
 class TestLeafNode(unittest.TestCase):
 
@@ -27,6 +33,7 @@ class TestLeafNode(unittest.TestCase):
         node1 = LeafNode(None, "Just some text")
         node2 = "Just some text"
         self.assertEqual(node1.to_html(), node2)
+
 
 class TestParentNode(unittest.TestCase):
 
@@ -56,7 +63,9 @@ class TestParentNode(unittest.TestCase):
         inner_child = LeafNode(tag="span", value="Hello mister")
         inner_parent = ParentNode(tag="p", children=[inner_child])
         outer_parent = ParentNode(tag="div", children=[inner_parent])
-        self.assertEqual(outer_parent.to_html(), "<div><p><span>Hello mister</span></p></div>")
+        self.assertEqual(
+            outer_parent.to_html(), "<div><p><span>Hello mister</span></p></div>"
+        )
 
 
 if __name__ == "__main()__":

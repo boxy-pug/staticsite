@@ -74,21 +74,23 @@ class TestInlineMarkdown(unittest.TestCase):
             TextNode("link", text_type_link, "https://www.google.com"),
         ]
 
-
     def test_split_nodes_multiple(self):
-        node1 = TextNode("Hello heres one [link](www.example.com) and [another link](www.anotherlink.com) for you.", text_type_text)
+        node1 = TextNode(
+            "Hello heres one [link](www.example.com) and [another link](www.anotherlink.com) for you.",
+            text_type_text,
+        )
         actual = split_nodes_link([node1])
         expected = [
             TextNode("Hello heres one ", text_type_text),
             TextNode("link", text_type_link, "www.example.com"),
             TextNode(" and ", text_type_text),
             TextNode("another link", text_type_link, "www.anotherlink.com"),
-            TextNode(" for you.", text_type_text)
+            TextNode(" for you.", text_type_text),
         ]
         self.assertEqual(actual, expected)
 
     def test_text_to_textnodes(self):
-        node1 = 'This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)'
+        node1 = "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
         actual = text_to_textnodes(node1)
         expected = [
             TextNode("This is ", text_type_text),
