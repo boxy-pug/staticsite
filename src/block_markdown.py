@@ -1,4 +1,5 @@
 import re
+from htmlnode import HTMLNode, ParentNode
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
@@ -88,3 +89,35 @@ def ol_block_to_html(block):
     li_block = [f"<li>{line}</li>" for line in block_lines]
     li_block_string = "\n".join(li_block)
     return ParentNode(tag="ul", children=[HTMLNode(tag="li", value=li_block_string)])
+
+
+def block_to_html_node(block):
+    block_type = block_to_block_type(block)
+    if block_type == block_type_heading:
+        return heading_block_to_html(block)
+    elif block_type == block_type_paragraph:
+        return paragraph_block_to_html(block)
+    elif block_type == block_type_code:
+        return code_block_to_html(block)
+    elif block_type == block_type_unordered_list:
+        return ul_block_to_html(block)
+    elif block_type == block_type_ordered_list:
+        return ol_block_to_html(block)
+    elif block_type == block_type_quote:
+        return quote_block_to_html(block)
+    else:
+        raise ValueError("Invalid block type")
+
+
+def markdown_to_html_node(markdown):
+    """This one should make use of a lot of the previous functionality 
+    to convert a full markdown document into an HTMLNode. 
+    That top-level HTMLNode should just be a <div>, where each child is a block of the document. 
+    Each block should have its own "inline" children."""
+    blocks = markdown_to_blocks(markdown)
+    children_nodes = []
+    for block in blocks:
+        html_node = block_to_html_node(block) 
+        children_nodes.append(html_node)
+    return ParentNode("div", children_nodes, None)
+
