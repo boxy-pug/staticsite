@@ -5,6 +5,7 @@ from inline_markdown import (
     split_nodes_image,
     split_nodes_link,
     text_to_textnodes,
+    extract_title,
 )
 import unittest
 from textnode import (
@@ -40,6 +41,28 @@ class TestInlineMarkdown(unittest.TestCase):
             )
         ]
         self.assertEqual(node1, node2)
+
+    def test_extract_title(self):
+        markdown = """
+        This is some introductory text.
+
+        # My Title
+
+        Some more text here.
+        """
+        expected = "My Title"
+        self.assertEqual(extract_title(markdown), expected)
+
+    def test_no_title(self):
+        markdown = """
+        This is some introductory text.
+
+        Some more text here.
+        """
+        with self.assertRaises(ValueError) as context:
+            extract_title(markdown)
+        self.assertEqual(str(context.exception), "No H1 found")
+
 
     def test_split_nodes_image(self):
         node1 = TextNode(

@@ -45,6 +45,13 @@ def extract_markdown_links(string):
     """return markdown link tuple (tag and url)"""
     return re.findall(r"\[(.*?)\]\((.*?)\)", string)
 
+def extract_title(markdown):
+    lines = markdown.splitlines()
+    for line in lines:
+        stripped_line = line.lstrip()
+        if stripped_line.startswith("# "):
+            return stripped_line[2:].strip()
+    raise ValueError("No H1 found")
 
 def split_nodes_image(old_nodes):
     new_nodes = []
