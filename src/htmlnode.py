@@ -55,5 +55,12 @@ class ParentNode(HTMLNode):
             raise ValueError("Parentnode needs tag")
         if not self.children:
             raise ValueError("Parentnode needs children")
-        children_html = "".join(child.to_html() for child in self.children)
+
+        children_html = ""
+        for child in self.children:
+            if isinstance(child, LeafNode) and child.value.strip():
+                children_html += child.to_html()
+            elif isinstance(child, ParentNode):
+                children_html += child.to_html()
+
         return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"

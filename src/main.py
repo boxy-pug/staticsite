@@ -6,18 +6,31 @@ import os
 import shutil
 
 
-FROM_PATH = "content/index.md"
+CONTENT_DIR = "content"
 TEMPLATE_PATH = "./template.html"
-DESTINATION_PATH = "public/index.html"
+DESTINATION_DIR = "public"
+
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    for root, dirs, files in os.walk(dir_path_content):
+        for file in files:
+            if file.endswith(".md"):
+                file_path = os.path.join(root, file)
+                rel_path = os.path.relpath(root, dir_path_content)
+                dest_dir = os.path.join(dest_dir_path, rel_path)
+                dest_file_path = os.path.join(dest_dir, file.replace('.md', '.html'))
+
+                os.makedirs(dest_dir, exist_ok=True)
+                generate_page(file_path, template_path, dest_file_path)
 
 
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
-    with open(FROM_PATH, "r") as f:
+    with open(from_path, "r") as f:
         markdown_content = f.read()
 
-    with open(TEMPLATE_PATH, "r") as f:
+    with open(template_path, "r") as f:
         template_content = f.read()
 
     html_node = markdown_to_html_node(markdown_content)
@@ -40,7 +53,7 @@ def clear_directory(dir):
 
 def main():
 
-    source_dir, destination_dir = "static", "public"
+    source_dir, destination_dir = "static", DESTINATION_DIR
 
     clear_directory(destination_dir)
     print("Destination directory has been cleared.")
@@ -48,7 +61,8 @@ def main():
     copy_directory(source_dir, destination_dir)
     print("Files and directories have been copied.")
 
-    generate_page(FROM_PATH, TEMPLATE_PATH, DESTINATION_PATH)
+    # generate_page("content/majesty/index.md", TEMPLATE_PATH, "public/index.html")
+    generate_pages_recursive(CONTENT_DIR, TEMPLATE_PATH, DESTINATION_DIR)
 
 if __name__ == "__main__":
     main()

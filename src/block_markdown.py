@@ -97,7 +97,13 @@ def ul_block_to_html(block):
 
 def ol_block_to_html(block):
     block_lines = block.split("\n")
-    li_nodes = [LeafNode(tag="li", value=line.split(". ", 1)[1].strip()) for line in block_lines]
+    li_nodes = []
+    for line in block_lines:
+        stripped_line = line.split(". ", 1)[1].strip() if ". " in line else line.strip()
+        if stripped_line:
+            text_nodes = text_to_textnodes(stripped_line)
+            inline_nodes = [text_node_to_html_node(text_node) for text_node in text_nodes]
+            li_nodes.append(ParentNode(tag="li", children=inline_nodes))
     return ParentNode(tag="ol", children=li_nodes)
 
 

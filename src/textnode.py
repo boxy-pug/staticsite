@@ -28,6 +28,9 @@ class TextNode:
 def text_node_to_html_node(text_node):
     """TextNode to an HTMLNode. Well, to be specific,
     we will actually be converting them to a type of HTMLNode, namely a LeafNode."""
+    if text_node.text_type in ["text", "bold", "italic", "code", "link", "image"] and not text_node.text.strip():
+        return None
+
     if text_node.text_type == "text":
         return LeafNode(None, text_node.text)
     elif text_node.text_type == "bold":
