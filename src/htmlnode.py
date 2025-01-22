@@ -46,8 +46,8 @@ class ParentNode(HTMLNode):
     """This is the one that will handle the nesting of HTML nodes inside of one another.
     Any HTML node that's not "leaf" node (i.e. it has children) is a "parent" node."""
 
-    def __init__(self, tag, children):
-        super().__init__(tag=tag, children=children)
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, children=children, props=props)
 
     def to_html(self):
         """return a string representing the HTML tag of the node and its children"""
@@ -56,4 +56,4 @@ class ParentNode(HTMLNode):
         if not self.children:
             raise ValueError("Parentnode needs children")
         children_html = "".join(child.to_html() for child in self.children)
-        return f"<{self.tag}>{children_html}</{self.tag}>"
+        return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"

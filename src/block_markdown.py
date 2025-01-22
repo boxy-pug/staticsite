@@ -1,5 +1,7 @@
 import re
-from htmlnode import HTMLNode, ParentNode
+from htmlnode import HTMLNode, ParentNode, LeafNode
+from inline_markdown import text_to_textnodes
+from textnode import text_node_to_html_node
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
@@ -53,42 +55,50 @@ def heading_block_to_html(block):
     elif heading_line.startswith("###### "):
         header_type = "h6"
     heading_line = heading_line.lstrip("#").lstrip()
-    return HTMLNode(tag=header_type, value=heading_line)
+    return LeafNode(tag=header_type, value=heading_line)
 
 
 def quote_block_to_html(block):
     block_lines = block.split("\n")
     stripped_block_lines = [line.lstrip(">").lstrip() for line in block_lines]
     stripped_block_string = "\n".join(stripped_block_lines)
-    return HTMLNode(tag="blockquote", value=stripped_block_string)
+    return LeafNode(tag="blockquote", value=stripped_block_string)
 
 
 def paragraph_block_to_html(block):
     block_lines = block.split("\n")
-    html_block_lines = [f"<p>{line}</p>" for line in block_lines]
-    html_block_string = "\n".join(html_block_lines)
-    return HTMLNode(tag="p", value=html_block_string)
+    paragraph_nodes = []
+    for line in block_lines:
+        text_nodes = text_to_textnodes(line)
+        for text_node in text_nodes:
+            html_node = text_node_to_html_node(text_node)
+            paragraph_nodes.append(html_node)
+    return ParentNode(tag="div", children=paragraph_nodes)
 
 
 def code_block_to_html(block):
     stripped_block = block[3:-3]
     return ParentNode(
-        tag="pre", children=[HTMLNode(tag="code", value=stripped_block)]
+        tag="pre", children=[LeafNode(tag="code", value=stripped_block)]
     )
 
 
 def ul_block_to_html(block):
     block_lines = block.split("\n")
-    li_block = [f"<li>{line}</li>" for line in block_lines]
-    li_block_string = "\n".join(li_block)
-    return ParentNode(tag="ul", children=[HTMLNode(tag="li", value="li_block_string")])
+    li_nodes = []
+    for line in block_lines:
+        stripped_line = line.lstrip().lstrip("*").lstrip("-").strip()
+        if stripped_line:
+            text_nodes = text_to_textnodes(stripped_line)
+            inline_nodes = [text_node_to_html_node(text_node) for text_node in text_nodes]
+            li_nodes.append(ParentNode(tag="li", children=inline_nodes))
+    return ParentNode(tag="ul", children=li_nodes)
 
 
 def ol_block_to_html(block):
     block_lines = block.split("\n")
-    li_block = [f"<li>{line}</li>" for line in block_lines]
-    li_block_string = "\n".join(li_block)
-    return ParentNode(tag="ul", children=[HTMLNode(tag="li", value=li_block_string)])
+    li_nodes = [LeafNode(tag="li", value=line.split(". ", 1)[1].strip()) for line in block_lines]
+    return ParentNode(tag="ol", children=li_nodes)
 
 
 def block_to_html_node(block):
@@ -119,5 +129,5 @@ def markdown_to_html_node(markdown):
     for block in blocks:
         html_node = block_to_html_node(block) 
         children_nodes.append(html_node)
-    return ParentNode("div", children_nodes, None)
+    return ParentNode("div", children_nodes)
 
