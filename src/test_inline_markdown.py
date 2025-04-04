@@ -113,7 +113,7 @@ class TestInlineMarkdown(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_text_to_textnodes(self):
-        node1 = "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
+        node1 = "This is **text** with an _italic_ word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
         actual = text_to_textnodes(node1)
         expected = [
             TextNode("This is ", text_type_text),
